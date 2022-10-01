@@ -158,3 +158,249 @@ describe('Array.dropWhile', () => {
     ]);
   });
 });
+
+describe('Array.take', () => {
+  test('Return if take function exist', () => {
+    expect(array.take).toBeDefined();
+  });
+  test('Creates a slice of array with parameter n not defined', () => {
+    expect(array.take([1, 2, 3])).toEqual([1]);
+  });
+  test('Creates a slice of array with parameter n = 2', () => {
+    expect(array.take([1, 2, 3], 2)).toEqual([1, 2]);
+  });
+  test('Creates a slice of array with parameter n = 5', () => {
+    expect(array.take([1, 2, 3], 5)).toEqual([1, 2, 3]);
+  });
+  test('Creates a slice of array with parameter n equal to 0', () => {
+    expect(array.take([1, 2, 3], 0)).toEqual([]);
+  });
+  test('Creates a slice of empty array with parameter n equal to 5', () => {
+    expect(array.take([], 5)).toEqual([]);
+  });
+});
+
+describe('Array.filter', () => {
+  test('Return if filter function exist', () => {
+    expect(array.filter).toBeDefined();
+  });
+  test('Check if function filter works for empty collections (array)', () => {
+    expect(array.filter({}, (o) => !o.active)).toEqual([]);
+  });
+  test('Check if function filter works for empty collections (object)', () => {
+    expect(array.filter([], (o) => !o.active)).toEqual([]);
+  });
+  const users = [
+    { user: 'barney', age: 36, active: true },
+    { user: 'fred', age: 40, active: false },
+  ];
+  const usersObj = {
+    user1: { user: 'barney', age: 36, active: true },
+    user2: { user: 'fred', age: 40, active: true },
+  };
+  test('Check if function filter works with no predicate argument provided (collection is array)', () => {
+    expect(array.filter(users)).toEqual(users);
+  });
+  test('Check if function filter works with no predicate argument provided (collection is object)', () => {
+    expect(array.filter(usersObj)).toEqual([
+      { user: 'barney', age: 36, active: true },
+      { user: 'fred', age: 40, active: true },
+    ]);
+  });
+  test('Filters an array if parameter predicate provided with function', () => {
+    expect(array.filter(users, (o) => !o.active)).toEqual([
+      { user: 'fred', age: 40, active: false },
+    ]);
+  });
+  test('Filters an array if parameter predicate provided with object (analog `_.matches` iteratee shorthand.`', () => {
+    expect(array.filter(users, { age: 36, active: true })).toEqual([
+      { user: 'barney', age: 36, active: true },
+    ]);
+  });
+  test('Filters an array if parameter predicate provided with array (analog `_.matchesProperty` iteratee shorthand.`)', () => {
+    expect(array.filter(users, ['active', false])).toEqual([
+      { user: 'fred', age: 40, active: false },
+    ]);
+  });
+  test('Filters an object if parameter predicate provided with array (analog `_.matchesProperty` iteratee shorthand.`)', () => {
+    expect(array.filter(usersObj, ['age', 40])).toEqual([
+      { user: 'fred', age: 40, active: true },
+    ]);
+  });
+  test('Filters an array if parameter predicate provided with property (analog `_.property` iteratee shorthand.`)', () => {
+    expect(array.filter(users, 'active')).toEqual([
+      { user: 'barney', age: 36, active: true },
+      { user: 'fred', age: 40, active: false },
+    ]);
+  });
+});
+
+describe('Array.find', () => {
+  test('Return if find function exist', () => {
+    expect(array.find).toBeDefined();
+  });
+  test('Check if function find works for empty collections (array)', () => {
+    expect(array.find({}, (o) => o.age < 40)).toBeUndefined();
+  });
+  test('Check if function find works for empty collections (object)', () => {
+    expect(array.find([], (o) => o.age < 40)).toBeUndefined();
+  });
+  const users = [
+    { user: 'barney', age: 36, active: true },
+    { user: 'fred', age: 40, active: false },
+    { user: 'pebbles', age: 1, active: true },
+  ];
+  const usersObj = {
+    user1: { user: 'barney', age: 36, active: true },
+    user2: { user: 'fred', age: 40, active: false },
+    user3: { user: 'pebbles', age: 1, active: true },
+  };
+  test('Check if function filter works with no predicate argument provided (collection is array)', () => {
+    expect(array.find(users)).toBeUndefined();
+  });
+  test('Check if function filter works with no predicate argument provided (collection is object)', () => {
+    expect(array.find(usersObj)).toBeUndefined();
+  });
+  test('Finds element in the array if parameter predicate provided with function', () => {
+    expect(array.find(users, (o) => o.age < 40)).toEqual({
+      user: 'barney',
+      age: 36,
+      active: true,
+    });
+  });
+  test('Finds element in the array if parameter predicate provided with object (analog `_.matches` iteratee shorthand.`', () => {
+    expect(array.find(users, { age: 1, active: true })).toEqual({
+      user: 'pebbles',
+      age: 1,
+      active: true,
+    });
+  });
+  test('Finds element in the array if parameter predicate provided with array (analog `_.matchesProperty` iteratee shorthand.`)', () => {
+    expect(array.find(users, ['active', false])).toEqual({
+      user: 'fred',
+      age: 40,
+      active: false,
+    });
+  });
+  test('Finds element in the array if parameter predicate provided with property (analog `_.property` iteratee shorthand.`)', () => {
+    expect(array.find(users, 'active')).toEqual({
+      user: 'barney',
+      age: 36,
+      active: true,
+    });
+  });
+  test('Finds element in the object if parameter predicate provided with function', () => {
+    expect(array.find(usersObj, (o) => o.age < 40)).toEqual({
+      user: 'barney',
+      age: 36,
+      active: true,
+    });
+  });
+  test('Finds element in the object if parameter predicate provided with object (analog `_.matches` iteratee shorthand.`', () => {
+    expect(array.find(usersObj, { age: 1, active: true })).toEqual({
+      user: 'pebbles',
+      age: 1,
+      active: true,
+    });
+  });
+  test('Finds element in the object if parameter predicate provided with array (analog `_.matchesProperty` iteratee shorthand.`)', () => {
+    expect(array.find(usersObj, ['active', false])).toEqual({
+      user: 'fred',
+      age: 40,
+      active: false,
+    });
+  });
+  test('Finds element in the object if parameter predicate provided with property (analog `_.property` iteratee shorthand.`)', () => {
+    expect(array.find(usersObj, 'active')).toEqual({
+      user: 'barney',
+      age: 36,
+      active: true,
+    });
+  });
+  test('Finds element in the array if parameter predicate provided with function and n parameter exceeds the length of array', () => {
+    expect(array.find(users, (o) => o.age < 40, 5)).toBeUndefined();
+  });
+  test('Finds element in the array if parameter predicate provided with function and n = 1', () => {
+    expect(array.find(users, (o) => o.age < 40, 1)).toEqual({
+      user: 'pebbles',
+      age: 1,
+      active: true,
+    });
+  });
+});
+
+describe('Array.includes', () => {
+  test('Return if includes function exist', () => {
+    expect(array.includes).toBeDefined();
+  });
+  test('Check if function includes works for empty collections (array)', () => {
+    expect(array.includes({}, 1)).toBeFalsy();
+  });
+  test('Check if function includes works for empty collections (object)', () => {
+    expect(array.includes([], 1)).toBeFalsy();
+  });
+  test('Check if function includes works for empty collections (string)', () => {
+    expect(array.includes('', 'a')).toBeFalsy();
+  });
+  const arr = [0, 1, 2, 3, 4, 5];
+  const obj = {
+    a: 1,
+    b: 2,
+    c: 3,
+  };
+  const str = 'barney';
+  test('Check if function includes works with |fromIndex| more than collection length', () => {
+    expect(array.includes(arr, 1, 5)).toBeFalsy();
+  });
+  test('Check if function includes works with |fromIndex| more than collection length', () => {
+    expect(array.includes(obj, 1, 5)).toBeFalsy();
+  });
+  test('Check if function includes works with |fromIndex| more () than collection length', () => {
+    expect(array.includes(str, 'b', -15)).toBeFalsy();
+  });
+  test('Check if function includes works with no value argument provided (collection is array)', () => {
+    expect(array.includes(arr)).toBeFalsy();
+  });
+  test('Check if function filter works with no predicate argument provided (collection is object)', () => {
+    expect(array.includes(obj)).toBeFalsy();
+  });
+  test('Check if function filter works with no predicate argument provided (collection is string)', () => {
+    expect(array.includes(str)).toBeFalsy();
+  });
+  test('Check if function includes works in base case scenario (collection is array, truthy)', () => {
+    expect(array.includes(arr, 1)).toBeTruthy();
+  });
+  test('Check if function includes works in base case scenario (collection is object, truthy)', () => {
+    expect(array.includes(obj, 2)).toBeTruthy();
+  });
+  test('Check if function includes works in base case scenario (collection is string, truthy)', () => {
+    expect(array.includes(str, 'a')).toBeTruthy();
+  });
+  test('Check if function includes works in base case scenario (collection is array, falsey)', () => {
+    expect(array.includes(arr, 10)).toBeFalsy();
+  });
+  test('Check if function includes works in base case scenario (collection is object, falsey)', () => {
+    expect(array.includes(obj, 5)).toBeFalsy();
+  });
+  test('Check if function includes works in base case scenario (collection is string, falsey)', () => {
+    expect(array.includes(str, 'd')).toBeFalsy();
+  });
+  test('Check if function includes works in base case scenario (collection is array, truthy, from index !=0)', () => {
+    expect(array.includes(arr, 3, 1)).toBeTruthy();
+  });
+  test('Check if function includes works in base case scenario (collection is object, truthy, from index !=0)', () => {
+    expect(array.includes(obj, 2, 1)).toBeTruthy();
+  });
+  test('Check if function includes works in base case scenario (collection is string, falsey, from index !=0)', () => {
+    expect(array.includes(str, 'a', 2)).toBeFalsy();
+  });
+  test('Check if function includes works in base case scenario (collection is array, truthy, fromIndex <0)', () => {
+    expect(array.includes(arr, 5, -4)).toBeTruthy();
+  });
+  test('Check if function includes works in base case scenario (collection is object, truthy, fromIndex <0)', () => {
+    expect(array.includes(obj, 2, -2)).toBeTruthy();
+  });
+  test('Check if function includes works in base case scenario (collection is string, falsey, fromIndex <0)', () => {
+    expect(array.includes(str, 'a', -2)).toBeFalsy();
+  });
+});

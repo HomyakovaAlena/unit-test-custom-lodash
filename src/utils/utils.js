@@ -20,6 +20,26 @@ const inObject = (obj, key, value) => {
   return false;
 };
 
+/**
+ * Util function: checks if object is empty.
+ *
+ * @param {Object} obj: The object to query
+ * @return {boolean} Returns boolean if object empty or not
+ *
+ * @example
+ * const obj = { 'user': 'barney',  'active': false };
+ * isEmpty(obj)
+ *  => false
+ *
+ * isEmpty({})
+ *  => true
+ */
+
+function isEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
+
 module.exports = {
   inObject,
+  isEmpty,
 };

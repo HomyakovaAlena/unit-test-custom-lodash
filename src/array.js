@@ -1,3 +1,4 @@
+// const includesLodash = require('lodash.includes');
 const utils = require('./utils/utils');
 
 /**
@@ -107,33 +108,204 @@ function dropWhile(arr, predicate) {
   if (!arr || !arr.length) return [];
   if (!predicate) return arr;
   if (Array.isArray(predicate)) {
-    return predicate.length > 2 || predicate.length === 0
+    return (predicate.length > 2 || predicate.length === 0)
       ? []
       : arr.slice(
         arr.findIndex((element) => !utils.inObject(element, predicate[0], predicate[1])),
         arr.length,
       );
   }
-  if (typeof predicate === 'string') {
-    return arr.slice(
+  switch (typeof predicate) {
+    case 'string': return arr.slice(
       arr.findIndex((element) => Object.hasOwn(element, predicate)),
       arr.length,
     );
-  }
-  if (typeof predicate === 'object') {
-    return arr.slice(
+    case 'object': return arr.slice(
       arr.findIndex((element) => Object.entries(predicate)
         .some((entry) => !utils.inObject(element, entry[0], entry[1]))),
       arr.length,
     );
-  }
-  if (typeof predicate === 'function') {
-    return arr.slice(
+    case 'function': return arr.slice(
       arr.findIndex((item) => !predicate(item)),
       arr.length,
     );
+    default: return arr;
   }
-  return arr;
+}
+
+/**
+ * Creates a slice of array with n elements taken from the beginning.
+ *
+ * @param {Array} arr: The array to query
+ * @param {number} n: The number of elements to take.
+ * @return {Array} Returns the slice of array.
+ *
+ * @example
+ * take([1, 2, 3]);
+ *  => [1]
+ *
+ * take([1, 2, 3], 2);
+ *  => [1, 2]
+ *
+ * take([1, 2, 3], 5);
+ *  => [1, 2, 3]
+ *
+ * take([1, 2, 3], 0);
+ *  => []
+ */
+function take(array, n = 1) {
+  return array.slice(0, n);
+}
+
+/**
+ * Iterates over elements of collection,
+ * returning an array of all elements predicate returns truthy for.
+ * The predicate is invoked with three arguments: (value, index|key, collection).
+ *
+ * Note: this method returns a new array.
+ *
+ * @param {Array | Object} collection: The collection to iterate over.
+ * @param {Function | Array | string} predicate: The predicate applied per iteration.
+ * @return {Array} Returns the new filtered array.
+ *
+ * @example
+ * const users = [
+ * { 'user': 'barney', 'age': 36, 'active': true },
+ * { 'user': 'fred',   'age': 40, 'active': false }
+ * ];
+ * filter(users, function(o) { return !o.active; });
+ *  => objects for ['fred']
+ *
+ * filter(users, { 'age': 36, 'active': true });
+ *  => objects for ['barney']
+ *
+ * filter(users, ['active', false]);
+ *  => objects for ['fred']
+ *
+ * filter(users, 'active');
+ *  => objects for ['barney']
+ *
+ */
+function filter(collection, predicate) {
+  if (Array.isArray(collection) && collection.length === 0) return [];
+  if (utils.isEmpty(collection)) return [];
+  const collectionToFilter = Array.isArray(collection) ? collection : Object.values(collection);
+  if (!predicate) return collectionToFilter;
+
+  if (Array.isArray(predicate)) {
+    return (predicate.length > 2 || predicate.length === 0)
+      ? [] : collectionToFilter.filter((element) => utils
+        .inObject(element, predicate[0], predicate[1]));
+  }
+
+  switch (typeof predicate) {
+    case 'string': return collectionToFilter.filter((element) => Object.hasOwn(element, predicate));
+    case 'object': return collectionToFilter.filter((element) => Object.entries(predicate)
+      .every((entry) => utils.inObject(element, entry[0], entry[1])));
+    case 'function': return collectionToFilter.filter((element) => predicate(element));
+    default: return collectionToFilter;
+  }
+}
+
+/**
+ * Iterates over elements of collection, returning the first element predicate returns truthy for.
+ * The predicate is invoked with three arguments: (value, index|key, collection).
+ *
+ * @param {Array | Object} collection: The collection to iterate over.
+ * @param {Function | Array | string} predicate: The predicate applied per iteration.
+ * @param [n=0]{number} n: The index to search from.
+ * @return {*} Returns the matched element, else undefined.
+ *
+ * @example
+ * const users = [
+ * { 'user': 'barney',  'age': 36, 'active': true },
+ * { 'user': 'fred',    'age': 40, 'active': false },
+ * { 'user': 'pebbles', 'age': 1,  'active': true }
+ * ];
+ *
+ * find(users, function(o) { return o.age < 40; });
+ *  => object for 'barney'
+ *
+ * find(users, { 'age': 1, 'active': true });
+ *  => object for 'pebbles'
+ *
+ * find(users, ['active', false]);
+ *  => object for 'fred'
+ *
+ * find(users, 'active');
+ *  => object for 'barney'
+ *
+ */
+function find(collection, predicate, n = 0) {
+  if (Array.isArray(collection) && collection.length === 0) return undefined;
+  if (utils.isEmpty(collection)) return undefined;
+  if (!predicate) return undefined;
+  const length = Array.isArray(collection) ? collection.length : Object.keys(collection).length;
+  if (n > length) return undefined;
+  const collectionToFilter = Array.isArray(collection) ? collection : Object.values(collection);
+
+  if (Array.isArray(predicate)) {
+    return (predicate.length > 2 || predicate.length === 0)
+      ? undefined : collectionToFilter.slice(n, collectionToFilter.length).find((element) => utils
+        .inObject(element, predicate[0], predicate[1]));
+  }
+
+  switch (typeof predicate) {
+    case 'string': return collectionToFilter
+      .slice(n, collectionToFilter.length)
+      .find((element) => Object.hasOwn(element, predicate));
+    case 'object': return collectionToFilter
+      .slice(n, collectionToFilter.length)
+      .find((element) => Object.entries(predicate)
+        .every((entry) => utils.inObject(element, entry[0], entry[1])));
+    case 'function': return collectionToFilter
+      .slice(n, collectionToFilter.length)
+      .find((element) => predicate(element));
+    default: return undefined;
+  }
+}
+
+/**
+ * Checks if value is in collection.
+ * If collection is a string, it's checked for a substring of value,
+ * otherwise SameValueZero is used for equality comparisons.
+ * If fromIndex is negative, it's used as the offset from the end of collection.
+ *
+ * @param {Array|Object|string} collection: The collection to inspect.
+ * @param {*} value: The value to search for.
+ * @param [fromIndex=0]{number} fromIndex : The index to search from.
+ * @return (boolean): Returns true if value is found, else false.
+ *
+ * @example
+ *
+ * includes([1, 2, 3], 1);
+ *  => true
+ *
+ * includes([1, 2, 3], 1, 2);
+ *  => false
+ *
+ * includes({ 'a': 1, 'b': 2 }, 1);
+ *  => true
+ *
+ * includes('abcd', 'bc');
+ *  => true
+ *
+ */
+function includes(collection, value, fromIndex = 0) {
+  if ((Array.isArray(collection) || typeof collection === 'string')
+    && (collection.length === 0)) return false;
+  if (utils.isEmpty(collection)) return false;
+  if (!value) return false;
+  const length = (Array.isArray(collection) || typeof collection === 'string')
+    ? collection.length
+    : Object.keys(collection).length;
+  if (Math.abs(fromIndex) > length) return false;
+  const collectionToFilter = (Array.isArray(collection) || typeof collection === 'string')
+    ? collection
+    : Object.values(collection);
+
+  return fromIndex >= 0 ? collectionToFilter.includes(value, fromIndex)
+    : collectionToFilter.includes(value, length + fromIndex);
 }
 
 module.exports = {
@@ -141,4 +313,8 @@ module.exports = {
   compact,
   drop,
   dropWhile,
+  take,
+  filter,
+  find,
+  includes,
 };

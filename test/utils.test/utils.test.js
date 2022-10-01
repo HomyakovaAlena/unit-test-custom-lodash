@@ -25,3 +25,18 @@ describe('utils.inObject', () => {
     expect(utils.inObject({}, undefined, value)).toBeFalsy();
   });
 });
+
+describe('utils.isEmpty', () => {
+  test('Return if isEmpty function exist', () => {
+    expect(utils.isEmpty).toBeDefined();
+  });
+
+  const obj = { user: 'barney', active: false };
+
+  test('Returns if function works for empty object', () => {
+    expect(utils.isEmpty({})).toBeTruthy();
+  });
+  test('Returns if function works for non-empty object', () => {
+    expect(utils.isEmpty(obj)).toBeFalsy();
+  });
+});
