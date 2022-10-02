@@ -240,10 +240,10 @@ describe('Array.find', () => {
     expect(array.find).toBeDefined();
   });
   test('Check if function find works for empty collections (array)', () => {
-    expect(array.find({}, (o) => o.age < 40)).toBeUndefined();
+    expect(array.find([], (o) => o.age < 40)).toBeUndefined();
   });
   test('Check if function find works for empty collections (object)', () => {
-    expect(array.find([], (o) => o.age < 40)).toBeUndefined();
+    expect(array.find({}, (o) => o.age < 40)).toBeUndefined();
   });
   const users = [
     { user: 'barney', age: 36, active: true },
@@ -255,10 +255,10 @@ describe('Array.find', () => {
     user2: { user: 'fred', age: 40, active: false },
     user3: { user: 'pebbles', age: 1, active: true },
   };
-  test('Check if function filter works with no predicate argument provided (collection is array)', () => {
+  test('Check if function find works with no predicate argument provided (collection is array)', () => {
     expect(array.find(users)).toBeUndefined();
   });
-  test('Check if function filter works with no predicate argument provided (collection is object)', () => {
+  test('Check if function find works with no predicate argument provided (collection is object)', () => {
     expect(array.find(usersObj)).toBeUndefined();
   });
   test('Finds element in the array if parameter predicate provided with function', () => {
@@ -361,10 +361,10 @@ describe('Array.includes', () => {
   test('Check if function includes works with no value argument provided (collection is array)', () => {
     expect(array.includes(arr)).toBeFalsy();
   });
-  test('Check if function filter works with no predicate argument provided (collection is object)', () => {
+  test('Check if function includes works with no predicate argument provided (collection is object)', () => {
     expect(array.includes(obj)).toBeFalsy();
   });
-  test('Check if function filter works with no predicate argument provided (collection is string)', () => {
+  test('Check if function includes works with no predicate argument provided (collection is string)', () => {
     expect(array.includes(str)).toBeFalsy();
   });
   test('Check if function includes works in base case scenario (collection is array, truthy)', () => {
@@ -402,5 +402,69 @@ describe('Array.includes', () => {
   });
   test('Check if function includes works in base case scenario (collection is string, falsey, fromIndex <0)', () => {
     expect(array.includes(str, 'a', -2)).toBeFalsy();
+  });
+});
+
+describe('Array.map', () => {
+  test('Return if map function exist', () => {
+    expect(array.map).toBeDefined();
+  });
+  function square(n) {
+    return n * n;
+  }
+  const users = [{ user: 'barney' }, { user: 'fred' }];
+  test('Check if function map works for empty collections (array)', () => {
+    expect(array.map([], square)).toEqual([]);
+  });
+  test('Check if function map works for empty collections (object)', () => {
+    expect(array.map({}, square)).toEqual([]);
+  });
+  test('Check if function map works with no func argument provided (collection is array)', () => {
+    expect(array.map([4, 8])).toEqual([]);
+  });
+  test('Check if function map works with no predicate argument provided (collection is object)', () => {
+    expect(array.map(users)).toEqual([]);
+  });
+  test('Check if function map works in base case scenario (collection is array, func is function)', () => {
+    expect(array.map([4, 8], square)).toEqual([16, 64]);
+  });
+  test('Check if function map works in base case scenario (collection is object, func is function)', () => {
+    expect(array.map({ a: 4, b: 8 }, square)).toEqual([16, 64]);
+  });
+  test('Check if function map works in base case scenario (collection is array, func is property)', () => {
+    expect(array.map(users, 'user')).toEqual(['barney', 'fred']);
+  });
+  test('Check if function map works in scenario: collection is array, func is property not available in object', () => {
+    expect(array.map(users, 'type')).toEqual([]);
+  });
+  test('Check if function map works in scenario: collection is array, func is property not available in array', () => {
+    expect(array.map([4, 8], 'user')).toEqual([]);
+  });
+});
+
+describe('Array.zip', () => {
+  test('Return if zip function exist', () => {
+    expect(array.zip).toBeDefined();
+  });
+  test('Check if function zip works for empty arrays', () => {
+    expect(array.zip([])).toEqual([]);
+  });
+  test('Check if function zip works in base case scenario', () => {
+    expect(array.zip(['a', 'b'], [1, 2], [true, false])).toEqual([['a', 1, true], ['b', 2, false]]);
+  });
+  test('Check if function zip works in case of different length of arrays passed', () => {
+    expect(array.zip(['a', 'b'], [1, 2, 3], [true, false])).toEqual([['a', 1, true], ['b', 2, false], [undefined, 3, undefined]]);
+  });
+  test('Check if function zip works in case of 1 array passed', () => {
+    expect(array.zip(['a', 'b', 'c'])).toEqual([['a'], ['b'], ['c']]);
+  });
+  test('Check if function zip works in case no arguments passed', () => {
+    expect(array.zip()).toEqual([]);
+  });
+  test('Check if function zip works in case type of all arguments passed are not arrays', () => {
+    expect(array.zip('a', 'b')).toEqual([]);
+  });
+  test('Check if function zip works in case type of (some) arguments passed are not arrays', () => {
+    expect(array.zip([1, 2], 'a', 1)).toEqual([[1], [2]]);
   });
 });

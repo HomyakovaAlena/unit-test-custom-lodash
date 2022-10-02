@@ -1,4 +1,3 @@
-// const includesLodash = require('lodash.includes');
 const utils = require('./utils/utils');
 
 /**
@@ -308,6 +307,81 @@ function includes(collection, value, fromIndex = 0) {
     : collectionToFilter.includes(value, length + fromIndex);
 }
 
+/**
+ * Creates an array of values by running each element in collection thru iteratee.
+ * The iteratee is invoked with three arguments: (value, index|key, collection).
+ *
+ * @param {Array|Object} collection: The collection to iterate over.
+ * @param {Function | string} func: Function/property applied per iteration.
+ * @return (Array): Returns the new mapped array.
+ *
+ * @example
+ *
+ * function square(n) {
+ *    return n * n;
+ * }
+ *
+ * map([4, 8], square);
+ *  => [16, 64]
+ *
+ * map({ 'a': 4, 'b': 8 }, square);
+ *  => [16, 64] (iteration order is not guaranteed)
+ *
+ * const users = [
+ *    { 'user': 'barney' },
+ *    { 'user': 'fred' }
+ * ];
+ *
+ * map(users, 'user');
+ *  => ['barney', 'fred']
+ *
+ */
+function map(collection, func) {
+  if ((Array.isArray(collection)) && (collection.length === 0)) return [];
+  if (utils.isEmpty(collection)) return [];
+  if (!func || (typeof func !== 'function' && typeof func !== 'string')) return [];
+  const collectionToApply = (Array.isArray(collection)) ? collection
+    : Object.values(collection);
+
+  return typeof func === 'string' ? collectionToApply
+    .map((element) => element[func]) : collectionToApply.map(func);
+}
+
+/**
+ * Creates an array of grouped elements,
+ * the first of which contains the first elements of the given arrays,
+ * the second of which contains the second elements of the given arrays, and so on.
+ *
+ * @param [arrays] (...Array): The arrays to process.
+ * @return (Array): Returns the new array of grouped elements.
+ *
+ * @example
+ *
+ * zip(['a', 'b'], [1, 2], [true, false]);
+ *  => [['a', 1, true], ['b', 2, false]]
+ *
+ */
+
+function zip(...arrays) {
+  if (!arrays) return [];
+  const filteredForArrays = arrays.filter((item) => Array.isArray(item));
+  if (!filteredForArrays.length) return [];
+  if (filteredForArrays.every((item) => item.length < 1)) return [];
+  let flag = true;
+  const result = [];
+  let count = 0;
+  while (flag) {
+    const ind = count;
+    result.push(filteredForArrays.map((item) => item[ind]));
+    if (filteredForArrays.some((item) => item.length - 1 > ind)) {
+      count += 1;
+    } else {
+      flag = false;
+    }
+  }
+  return result;
+}
+
 module.exports = {
   chunk,
   compact,
@@ -317,4 +391,6 @@ module.exports = {
   filter,
   find,
   includes,
+  map,
+  zip,
 };

@@ -4,7 +4,7 @@
   "description": "[https://github.com/rolling-scopes-school/js-fe-course-en/blob/main/tasks/unit-tests/unit-tests.md](https://github.com/rolling-scopes-school/js-fe-course-en/blob/main/tasks/unit-tests/unit-tests.md)",
   "main": "index.js",
   "scripts": {
-    "test": "npm run lint && jest --collectCoverage",
+    "test": "npm run lint && jest --collectCoverage --verbose",
     "testwatch": "jest --watchAll",
     "lint": "node node_modules/eslint/bin/eslint.js ./src",
     "lint:fix": "node node_modules/eslint/bin/eslint.js ./src --fix"
