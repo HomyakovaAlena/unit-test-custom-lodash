@@ -1,3 +1,5 @@
+// const merge = require('../object');
+
 /**
  * Util function: checks if object includes provided pair "key, value".
  *
@@ -39,7 +41,27 @@ function isEmpty(obj) {
   return Object.keys(obj).length === 0;
 }
 
+/**
+ * Util function: checks if passed argument is object.
+ *
+ * @param {*} obj: The parameter to check
+ * @return {boolean} Returns boolean if passed argument is object or not
+ *
+ * @example
+ * const obj = { 'user': 'barney',  'active': false };
+ * isObject(obj)
+ *  => true
+ *
+ * isObject('a')
+ *  => false
+ */
+
+function isObject(obj) {
+  return obj && obj.constructor === Object;
+}
+
 module.exports = {
   inObject,
   isEmpty,
+  isObject,
 };

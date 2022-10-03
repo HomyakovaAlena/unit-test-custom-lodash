@@ -40,3 +40,22 @@ describe('utils.isEmpty', () => {
     expect(utils.isEmpty(obj)).toBeFalsy();
   });
 });
+
+describe('utils.isObject', () => {
+  test('Return if isObject function exist', () => {
+    expect(utils.isObject).toBeDefined();
+  });
+  const obj = { user: 'barney', active: false };
+  test('Returns if function works for object', () => {
+    expect(utils.isObject(obj)).toBeTruthy();
+  });
+  test('Returns if function works for non-object (number case)', () => {
+    expect(utils.isObject(2)).toBeFalsy();
+  });
+  test('Returns if function works for non-object (string case)', () => {
+    expect(utils.isObject('1')).toBeFalsy();
+  });
+  test('Returns if function works for non-object (array case)', () => {
+    expect(utils.isObject(['1', '2'])).toBeFalsy();
+  });
+});
