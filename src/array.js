@@ -4,12 +4,12 @@ const utils = require('./utils/utils');
  * Creates an array of elements split into groups the length of size.
  * If array can't be split evenly, the final chunk will be the remaining elements.
  *
- * @param {Array} arr: The array to process
- * @param [size = 1]{number} size: The length of each chunk
+ * @param arr {Array}: The array to process
+ * @param [size = 1]{number}: The length of each chunk
  * @return {Array}: Returns the new array of chunks.
  *
  * @example
- *   chunk(['a', 'b', 'c', 'd'], 2);
+ * chunk(['a', 'b', 'c', 'd'], 2);
  *   => [['a', 'b'], ['c', 'd']]
  *
  * chunk(['a', 'b', 'c', 'd'], 3);
@@ -17,7 +17,7 @@ const utils = require('./utils/utils');
  */
 function chunk(arr, size = 1) {
   const { length } = arr;
-  if (!length || size < 1) {
+  if (!Array.isArray(arr) || !length || size < 1) {
     return [];
   }
   const sizeCorrected = Math.round(size);
@@ -37,28 +37,29 @@ function chunk(arr, size = 1) {
  * Creates an array with all falsey values removed.
  * The values false, null, 0, "", undefined, and NaN are falsey.
  *
- * @param {Array} arr: The array to compact.
+ * @param arr{Array}: The array to compact.
  * @return {Array}: Returns the new array of filtered values.
  *
  * @example
- *   compact([0, 1, false, 2, '', 3]);
- *   => [1, 2, 3]
+ * compact([0, 1, false, 2, '', 3]);
+ *  => [1, 2, 3]
  *
  */
 function compact(arr) {
+  if (!Array.isArray(arr)) return [];
   return arr.filter((item) => item);
 }
 
 /**
  * Creates a slice of array with n elements dropped from the beginning.
  *
- * @param {Array} arr: The array to query
- * @param [n=1]{number} num: The number of elements to drop.
- * @return {Array} Returns the slice of array.
+ * @param arr {Array}: The array to query
+ * @param [num = 1]{number}: The number of elements to drop.
+ * @return {Array}: Returns the slice of array.
  *
  * @example
- *  drop([1, 2, 3]);
- *    => [2, 3]
+ * drop([1, 2, 3]);
+ *  => [2, 3]
  *
  * drop([1, 2, 3], 2);
  *  => [3]
@@ -70,6 +71,7 @@ function compact(arr) {
  *  => [1, 2, 3]
  */
 function drop(arr, num = 1) {
+  if (!Array.isArray(arr)) return [];
   const { length } = arr;
   if (num === 0) return arr;
   if (num >= length || !length) return [];
@@ -81,9 +83,9 @@ function drop(arr, num = 1) {
  * Elements are dropped until predicate returns falsey.
  * The predicate is invoked with three arguments: (value, index, array).
  *
- * @param {Array} arr: The array to query
- * @param {Function | Array | string} predicate: The predicate applied per iteration.
- * @return {Array} Returns the slice of array.
+ * @param arr {Array}: The array to query
+ * @param predicate {Function | Array | string}: The predicate applied per iteration.
+ * @return {Array}: Returns the slice of array.
  *
  * @example
  * const users = [
@@ -104,10 +106,10 @@ function drop(arr, num = 1) {
  *  => objects for ['barney', 'fred', 'pebbles']
  */
 function dropWhile(arr, predicate) {
-  if (!arr || !arr.length) return [];
+  if (!arr || !Array.isArray(arr) || !arr.length) return [];
   if (!predicate) return arr;
   if (Array.isArray(predicate)) {
-    return (predicate.length > 2 || predicate.length === 0)
+    return utils.isInvalidPredicateArray(predicate)
       ? []
       : arr.slice(
         arr.findIndex((element) => !utils.inObject(element, predicate[0], predicate[1])),
@@ -135,9 +137,9 @@ function dropWhile(arr, predicate) {
 /**
  * Creates a slice of array with n elements taken from the beginning.
  *
- * @param {Array} arr: The array to query
- * @param {number} n: The number of elements to take.
- * @return {Array} Returns the slice of array.
+ * @param arr {Array}: The array to query
+ * @param n {number}: The number of elements to take.
+ * @return {Array}: Returns the slice of array.
  *
  * @example
  * take([1, 2, 3]);
@@ -153,6 +155,7 @@ function dropWhile(arr, predicate) {
  *  => []
  */
 function take(array, n = 1) {
+  if (!array || !Array.isArray(array) || !array.length) return [];
   return array.slice(0, n);
 }
 
@@ -163,15 +166,16 @@ function take(array, n = 1) {
  *
  * Note: this method returns a new array.
  *
- * @param {Array | Object} collection: The collection to iterate over.
- * @param {Function | Array | string} predicate: The predicate applied per iteration.
- * @return {Array} Returns the new filtered array.
+ * @param collection {Array | Object}: The collection to iterate over.
+ * @param predicate {Function | Array | string}: The predicate applied per iteration.
+ * @return {Array}: Returns the new filtered array.
  *
  * @example
  * const users = [
- * { 'user': 'barney', 'age': 36, 'active': true },
- * { 'user': 'fred',   'age': 40, 'active': false }
+ *   { 'user': 'barney', 'age': 36, 'active': true },
+ *   { 'user': 'fred',   'age': 40, 'active': false }
  * ];
+ *
  * filter(users, function(o) { return !o.active; });
  *  => objects for ['fred']
  *
@@ -187,12 +191,12 @@ function take(array, n = 1) {
  */
 function filter(collection, predicate) {
   if (Array.isArray(collection) && collection.length === 0) return [];
-  if (utils.isEmpty(collection)) return [];
+  if (utils.isEmptyObject(collection)) return [];
   const collectionToFilter = Array.isArray(collection) ? collection : Object.values(collection);
   if (!predicate) return collectionToFilter;
 
   if (Array.isArray(predicate)) {
-    return (predicate.length > 2 || predicate.length === 0)
+    return utils.isInvalidPredicateArray(predicate)
       ? [] : collectionToFilter.filter((element) => utils
         .inObject(element, predicate[0], predicate[1]));
   }
@@ -202,7 +206,7 @@ function filter(collection, predicate) {
     case 'object': return collectionToFilter.filter((element) => Object.entries(predicate)
       .every((entry) => utils.inObject(element, entry[0], entry[1])));
     case 'function': return collectionToFilter.filter((element) => predicate(element));
-    default: return collectionToFilter;
+    default: return [];
   }
 }
 
@@ -210,16 +214,16 @@ function filter(collection, predicate) {
  * Iterates over elements of collection, returning the first element predicate returns truthy for.
  * The predicate is invoked with three arguments: (value, index|key, collection).
  *
- * @param {Array | Object} collection: The collection to iterate over.
- * @param {Function | Array | string} predicate: The predicate applied per iteration.
- * @param [n=0]{number} n: The index to search from.
+ * @param collection {Array | Object}: The collection to iterate over.
+ * @param predicate {Function | Array | string}: The predicate applied per iteration.
+ * @param [n=0]{number}: The index to search from.
  * @return {*} Returns the matched element, else undefined.
  *
  * @example
  * const users = [
- * { 'user': 'barney',  'age': 36, 'active': true },
- * { 'user': 'fred',    'age': 40, 'active': false },
- * { 'user': 'pebbles', 'age': 1,  'active': true }
+ *   { 'user': 'barney',  'age': 36, 'active': true },
+ *   { 'user': 'fred',    'age': 40, 'active': false },
+ *   { 'user': 'pebbles', 'age': 1,  'active': true },
  * ];
  *
  * find(users, function(o) { return o.age < 40; });
@@ -237,14 +241,14 @@ function filter(collection, predicate) {
  */
 function find(collection, predicate, n = 0) {
   if (Array.isArray(collection) && collection.length === 0) return undefined;
-  if (utils.isEmpty(collection)) return undefined;
+  if (utils.isEmptyObject(collection)) return undefined;
   if (!predicate) return undefined;
   const length = Array.isArray(collection) ? collection.length : Object.keys(collection).length;
   if (n > length) return undefined;
   const collectionToFilter = Array.isArray(collection) ? collection : Object.values(collection);
 
   if (Array.isArray(predicate)) {
-    return (predicate.length > 2 || predicate.length === 0)
+    return utils.isInvalidPredicateArray(predicate)
       ? undefined : collectionToFilter.slice(n, collectionToFilter.length).find((element) => utils
         .inObject(element, predicate[0], predicate[1]));
   }
@@ -270,9 +274,9 @@ function find(collection, predicate, n = 0) {
  * otherwise SameValueZero is used for equality comparisons.
  * If fromIndex is negative, it's used as the offset from the end of collection.
  *
- * @param {Array|Object|string} collection: The collection to inspect.
- * @param {*} value: The value to search for.
- * @param [fromIndex=0]{number} fromIndex : The index to search from.
+ * @param collection {Array|Object|string}: The collection to inspect.
+ * @param value {*}: The value to search for.
+ * @param [fromIndex=0] {number}: The index to search from.
  * @return (boolean): Returns true if value is found, else false.
  *
  * @example
@@ -293,7 +297,7 @@ function find(collection, predicate, n = 0) {
 function includes(collection, value, fromIndex = 0) {
   if ((Array.isArray(collection) || typeof collection === 'string')
     && (collection.length === 0)) return false;
-  if (utils.isEmpty(collection)) return false;
+  if (utils.isEmptyObject(collection)) return false;
   if (!value) return false;
   const length = (Array.isArray(collection) || typeof collection === 'string')
     ? collection.length
@@ -311,14 +315,14 @@ function includes(collection, value, fromIndex = 0) {
  * Creates an array of values by running each element in collection thru iteratee.
  * The iteratee is invoked with three arguments: (value, index|key, collection).
  *
- * @param {Array|Object} collection: The collection to iterate over.
- * @param {Function | string} func: Function/property applied per iteration.
+ * @param collection {Array|Object}: The collection to iterate over.
+ * @param func {Function | string}: Function/property applied per iteration.
  * @return (Array): Returns the new mapped array.
  *
  * @example
  *
  * function square(n) {
- *    return n * n;
+ *   return n * n;
  * }
  *
  * map([4, 8], square);
@@ -338,7 +342,7 @@ function includes(collection, value, fromIndex = 0) {
  */
 function map(collection, func) {
   if ((Array.isArray(collection)) && (collection.length === 0)) return [];
-  if (utils.isEmpty(collection)) return [];
+  if (utils.isEmptyObject(collection)) return [];
   if (!func || (typeof func !== 'function' && typeof func !== 'string')) return [];
   const collectionToApply = (Array.isArray(collection)) ? collection
     : Object.values(collection);
@@ -361,9 +365,8 @@ function map(collection, func) {
  *  => [['a', 1, true], ['b', 2, false]]
  *
  */
-
 function zip(...arrays) {
-  if (!arrays) return [];
+  if (!arrays || arrays.length === 0) return [];
   const filteredForArrays = arrays.filter((item) => Array.isArray(item));
   if (!filteredForArrays.length) return [];
   if (filteredForArrays.every((item) => item.length < 1)) return [];

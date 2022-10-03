@@ -1,3 +1,5 @@
+const utils = require('./utils/utils');
+
 /**
  * This method is like _.assign except that it recursively merges own
  * and inherited enumerable string keyed properties of source objects into the destination object.
@@ -15,18 +17,17 @@
  *
  * @example
  * const object = {
- *    'a': [{ 'b': 2 }, { 'd': 4 }]
+ *   'a': [{ 'b': 2 }, { 'd': 4 }]
  * };
  *
  * const other = {
- *     'a': [{ 'c': 3 }, { 'e': 5 }]
+ *   'a': [{ 'c': 3 }, { 'e': 5 }]
  * };
  *
  * merge(object, other);
  *  => { 'a': [{ 'b': 2, 'c': 3 }, { 'd': 4, 'e': 5 }] }
  *
  */
-
 function merge(target, ...sources) {
   // eslint-disable-next-line no-restricted-syntax
   for (const source of sources) {
@@ -55,8 +56,8 @@ function merge(target, ...sources) {
  *  => { 'b': '2' }
  *
  */
-
 function omit(obj, ...pathes) {
+  if (!utils.isObject(obj)) return {};
   const result = {};
   const pathArray = [...pathes];
   Object.keys(obj).forEach((key) => {
@@ -84,10 +85,10 @@ function omit(obj, ...pathes) {
  *  => { 'b': '2' }
  *
  */
-
 function omitBy(obj, func) {
+  if (!utils.isObject(obj)) return {};
+  if (!func || !utils.isObject(obj)) return obj;
   const result = {};
-  if (!func) return obj;
   Object.entries(obj).forEach((entry) => {
     const key = entry[0];
     const value = entry[1];
@@ -102,7 +103,7 @@ function omitBy(obj, func) {
  * Creates an object composed of the picked object properties.
  *
  * @param obj (Object): The source object.
- * @param [paths] (...(string|string[])): The property paths to pick.
+ * @param [paths] (...(string | string[])): The property paths to pick.
  * @return (Object): Returns the new object.
  *
  * @example
@@ -111,7 +112,6 @@ function omitBy(obj, func) {
  *  => { 'a': 1, 'c': 3 }
  *
  */
-
 function pick(obj, ...pathes) {
   const result = {};
   const pathArray = [...pathes];
@@ -134,14 +134,14 @@ function pick(obj, ...pathes) {
  * @example
  * const object = { 'a': 1, 'b': '2', 'c': 3 };
  * const isNumber = (x) => x === Number(x);
+ *
  * pickBy(object, isNumber);
  *  => { 'a': 1, 'c': 3 }
  *
  */
-
 function pickBy(obj, func) {
   const result = {};
-  if (!func) return {};
+  if (!func || !utils.isObject(obj)) return {};
   Object.entries(obj).forEach((entry) => {
     const key = entry[0];
     const value = entry[1];
@@ -169,7 +169,6 @@ function pickBy(obj, func) {
  *  => [['a', 1], ['b', 2]] (iteration order is not guaranteed)
  *
  */
-
 function toPairs(obj) {
   if (obj instanceof Set || obj instanceof Map) return [obj.entries()];
   const result = [];
